@@ -1,0 +1,117 @@
+// pages/gou/gou.js
+
+Page({
+  
+
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    checked: false,
+    checkAll: false,
+    dataList: [{
+        id: '000',
+        img: '/images/hua/12.jpg',
+        content: '香槟玫瑰',
+        price: 7800,
+        showPrice: '78.00',
+        number: 1
+      },
+      {
+        id: '111',
+        img: '/images/hua/hau6.jpg',
+        content: '昆明桃红金芍',
+        price: 11200,
+        showPrice: '112.00',
+        number: 2
+      }, {
+        id: '222',
+        img: '/images/hua/hua7.jpg',
+        content: '昆明金丝竹桃',
+        price: 12900,
+        showPrice: '129.00',
+        number: 1
+      },
+    ],
+    totalMoney: '0.00',
+    selectDatas: []
+  },
+  // 查看详情
+  detailClick(e) {
+    let data = e.currentTarget.dataset.item;
+    wx.showToast({
+      title: '点击了查看详情',
+      icon: 'none'
+    })
+    console.log('详情数据：', data)
+  },
+  // 单选
+  checkboxChange(e) {
+    let money = 0,
+      str = [];
+    let attr = e.detail.value;
+    let list = this.data.dataList;
+    for (let i = 0; i < list.length; i++) {
+      for (let k = 0; k < attr.length; k++) {
+        if (list[i].id === attr[k]) {
+          money += list[i].price * list[i].number;
+          str.push(list[i]);
+        }
+      }
+    }
+    this.setData({
+      selectDatas: str,
+      totalMoney: (money / 100).toFixed(2),
+      checkAll: (list.length == attr.length && list.length > 0) ? true : false
+    })
+  },
+  // 全选
+  checkboxChangeAll(e) {
+    let money = 0,
+      str = [];
+    let val = e.detail.value;
+    let list = this.data.dataList;
+    if (val.length > 0) {
+      for (let i = 0; i < list.length; i++) {
+        money += list[i].price * list[i].number;
+        str.push(list[i]);
+      }
+      this.setData({
+        checked: true,
+        selectDatas: str,
+        totalMoney: (money / 100).toFixed(2)
+      })
+    } else {
+      this.setData({
+        checked: false,
+        selectDatas: [],
+        totalMoney: '0.00'
+      })
+    }
+  },
+  // 结算
+  totalClick() {
+    let list = this.data.selectDatas;
+    if (list.length < 1) {
+      wx.showToast({
+        title: '无结算订单',
+        icon: 'error'
+      })
+      return false;
+    }
+    wx.showModal({
+      title: '提示',
+      content: '确定结算当前订单吗？',
+      complete: (res) => {
+        if (res.confirm) {
+          wx.showToast({
+            title: '结算完成',
+          })
+        }
+      }
+    })
+  },
+})
+
+
+
